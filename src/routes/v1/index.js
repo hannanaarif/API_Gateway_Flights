@@ -7,5 +7,6 @@ console.log("Reached V1");
 
 
 router.get('/info',InfoController.info);
-router.use('/signup',userRouter);
+router.use('/user',userRouter);
+
 module.exports=router;

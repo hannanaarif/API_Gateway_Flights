@@ -7,6 +7,7 @@ const {SuccessResponse,ErrorResponse} = require('../utils/common');
 /**
  * POST:/signup
  * req.body{'email:abc@mail.com','password:'1234'}
+ *
  */
 
 async function signup(req,res){
@@ -29,43 +30,27 @@ async function signup(req,res){
     }
 }
 
-async function destroyCity(req,res){
+async function signin(req,res){
     try {
-        const city=await CityService.destroyCity(req.params.id);
-        SuccessResponse.data=city;
+        console.log("Data from Controller sign in",req.body.email,req.body.password);
+        const user=await UserService.signin({
+          email:req.body.email,
+          password:req.body.password
+        })
+        SuccessResponse.data=user;
         return res
-        .status(StatusCodes.OK)
-        .json(SuccessResponse);
-        
-    } catch (error) {
+        .status(StatusCodes.CREATED)
+        .json(SuccessResponse)
+           
+    }catch (error) {
+        console.log("Error from controller",error);
         ErrorResponse.error=error;
         return res.status(error.statuscode)
         .json(ErrorResponse);
-        
     }
-   
-}
-async function updateCity(req, res) {
-    try{
-        const cities = await CityService.updateCity(req.params.id, {
-            name:req.body.name
-        });
-        SuccessResponse.data = cities;
-        return res
-                .status(StatusCodes.OK)
-                .json(SuccessResponse);
-
-    }catch(error) {
-        ErrorResponse.error = error;
-        return res
-                .status(error.statusCode)
-                .json(ErrorResponse);
-    }
-
 }
 
 module.exports={
     signup,
-    destroyCity,
-    updateCity
+    signin
 }
