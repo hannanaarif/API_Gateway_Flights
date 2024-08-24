@@ -1,7 +1,6 @@
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
 const {ServerConfig}=require('../../config');
-const serverConfig = require('../../config/server-config');
 
 function checkPassword(plainPassword,encryptedPassword){
     try {
@@ -13,7 +12,8 @@ function checkPassword(plainPassword,encryptedPassword){
 
 function createToken(input){
     try {
-        return jwt.sign(input,ServerConfig.JWT_SECRET,{expiresIn:serverConfig.JWT_EXPIRY});
+        console.log("ServerConfig.JWT_EXPIRY",ServerConfig.JWT_EXPIRY);
+        return jwt.sign(input,ServerConfig.JWT_SECRET,{expiresIn:ServerConfig.JWT_EXPIRY});
     } catch (error) {
         console.log(error);
         throw error  

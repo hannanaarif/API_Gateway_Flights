@@ -25,6 +25,7 @@ function validateAuthRequest(req,res,next){
 async function checkAuth(req,res,next){
     try {
         const response=await UserService.isAuthenticated(req.headers['x-access-token']);
+        console.log("response from checkAuth Middleware",response);
         if(response){
             req.user=response  //setting the user id in the req object
             next()
