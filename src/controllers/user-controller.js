@@ -1,6 +1,8 @@
 const {StatusCodes}=require('http-status-codes');
 const {UserService}=require('../services');
 const {SuccessResponse,ErrorResponse} = require('../utils/common');
+const {Logger}=require('../config');
+
 
 
 
@@ -33,6 +35,7 @@ async function signup(req,res){
 async function signin(req,res){
     try {
         console.log("Data from Controller sign in",req.body.email,req.body.password);
+        Logger.info("Data from Controller sign in",{});
         const user=await UserService.signin({
           email:req.body.email,
           password:req.body.password

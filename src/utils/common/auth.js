@@ -17,13 +17,23 @@ function createToken(input){
     } catch (error) {
         console.log(error);
         throw error  
-    }
+    }  
+}
 
-    
+function verifyToken(token){
+    try {
+        return jwt.verify(token,ServerConfig.JWT_SECRET);
+        
+    } catch (error) {
+        console.log(error)
+        throw error
+        
+    }
 }
 
 
 module.exports={
     checkPassword,
-    createToken
+    createToken,
+    verifyToken
 }
