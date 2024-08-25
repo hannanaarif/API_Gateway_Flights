@@ -2,6 +2,7 @@ const {UserRepository,RoleRepository}=require('../repositories');
 const AppError=require('../utils/errors/app-error');
 const {StatusCodes}=require('http-status-codes');
 const {Auth,Enums}=require('../utils/common');
+const { hash } = require('bcrypt');
 
 
 const userRepo = new UserRepository();
@@ -55,7 +56,8 @@ async function isAuthenticated(token){
             if(!user){
                 throw new AppError('No user found',StatusCodes.BAD_REQUEST);
             }
-            return user.id
+            return user.id;
+
         } catch (error) {
             if(error instanceof AppError) throw error;
             if(error.name=='jsonWebTokenError'){
@@ -69,10 +71,51 @@ async function isAuthenticated(token){
         }
 }
 
+async function addRoletoUser(data){
+    try {
+        const user=await userRepo.get(data.id);
+        if(!user){
+            throw new AppError('No user found',StatusCodes.BAD_REQUEST);
+        }
+        const role=await roleRepo.getUserRoleByName(data.role);
+        if(!role){
+            throw new AppError('No user found for given role',StatusCodes.BAD_REQUEST);
+        }
+        user.addRole(role);
+        return user;
+    } catch (error) {
+        if(error instanceof AppError) throw error;
+        console.log(error);
+        throw new AppError('Something went wrong',StatusCodes.INTERNAL_SERVER_ERROR); 
+    }
+
+}
+
+async function isAdmin(id){
+    try {
+        const user=await userRepo.get(id);
+        if(!user){
+            throw new AppError('No user found',StatusCodes.BAD_REQUEST);
+        }
+        const adminrole=await roleRepo.getUserRoleByName(Enums.USER_ROLES_ENUMS.ADMIN);
+        if(!adminrole){
+            throw new AppError('No user found for given role',StatusCodes.BAD_REQUEST);
+        }
+        return user.hasRole(adminrole); 
+    } catch (error) {
+        if(error instanceof AppError) throw error;
+        console.log(error);
+        throw new AppError('Something went wrong',StatusCodes.INTERNAL_SERVER_ERROR); 
+    }
+
+}
+
 
 
 module.exports={
     signup,
     signin,
-    isAuthenticated
+    isAuthenticated,
+    addRoletoUser,
+    isAdmin
 }

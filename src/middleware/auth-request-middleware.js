@@ -3,6 +3,7 @@ const {SuccessResponse,ErrorResponse}=require('../utils/common');
 const AppError = require('../utils/errors/app-error');
 const {UserService}=require('../services');
 const { response } = require('express');
+const { message } = require('../utils/common/error-response');
 
 function validateAuthRequest(req,res,next){
     if(!req.body.email){
@@ -25,7 +26,6 @@ function validateAuthRequest(req,res,next){
 async function checkAuth(req,res,next){
     try {
         const response=await UserService.isAuthenticated(req.headers['x-access-token']);
-        console.log("response from checkAuth Middleware",response);
         if(response){
             req.user=response  //setting the user id in the req object
             next()
@@ -36,13 +36,23 @@ async function checkAuth(req,res,next){
                  .status(error.statuscode)
                  .json(error);
         
-    }
-
-    
+    }    
 }
+
+async function isAdmin(req,res,next){
+    const response=await UserService.isAdmin(req.user);
+    if(!response){
+        return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({message:'User not authorized for this action'}); 
+    }
+    next();
+}
+
 
 
 module.exports={
     validateAuthRequest,
-    checkAuth
+    checkAuth,
+    isAdmin
 }
